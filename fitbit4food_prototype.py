@@ -581,7 +581,7 @@ def start_RL_engine():
 	import subprocess
 	# subprocess.Popen(['python', 'reinforcement_engine.py'], close_fds=True)
 	subprocess.Popen(['/home/appuser/venv/bin/python', 'reinforcement_engine.py'], close_fds=True)
-
+ 
 # main function
 if __name__ == '__main__':
 	recommendation_engine_gui()
