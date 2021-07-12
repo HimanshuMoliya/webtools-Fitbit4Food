@@ -476,7 +476,7 @@ def recommendation_engine_gui():
 								$("#reward_{idx}").on("click", function(e){{
 									e.preventDefault();
 										$.ajax({{
-										url: 'http://10.12.59.199:5000/reward',
+										url: 'https://10.12.59.199:5000/reward',
 										method: 'POST',
 										headers: {{
 											'Content-Type':'application/json'
@@ -488,7 +488,7 @@ def recommendation_engine_gui():
 								$("#feedback_{idx}").on("click", function(e){{
 									e.preventDefault();
 										$.ajax({{
-										url: 'http://10.12.59.199:5000/feedback',
+										url: 'https://10.12.59.199:5000/feedback',
 										method: 'POST',
 										headers: {{
 											'Content-Type':'application/json'
