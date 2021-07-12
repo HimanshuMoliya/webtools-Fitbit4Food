@@ -11,3 +11,4 @@ pyspellchecker
 Inflect
 flask
 flask_cors
+pip
