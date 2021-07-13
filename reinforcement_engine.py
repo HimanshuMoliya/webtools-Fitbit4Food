@@ -74,4 +74,4 @@ def add_headers(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     return response
 
-app.run(port=5000)
+app.run(host= '0.0.0.0', port=5000)
