@@ -476,7 +476,7 @@ def recommendation_engine_gui():
 								$("#reward_{idx}").on("click", function(e){{
 									e.preventDefault();
 										$.ajax({{
-										url: 'https://share.streamlit.io/api/v1/app/himanshumoliya/webtools-fitbit4food/main/fitbit4food_prototype.py/reward',
+										url: '/reward',
 										method: 'POST',
 										headers: {{
 											'Content-Type':'application/json'
@@ -488,7 +488,7 @@ def recommendation_engine_gui():
 								$("#feedback_{idx}").on("click", function(e){{
 									e.preventDefault();
 										$.ajax({{
-										url: 'https://share.streamlit.io/api/v1/app/himanshumoliya/webtools-fitbit4food/main/fitbit4food_prototype.py/feedback',
+										url: '/feedback',
 										method: 'POST',
 										headers: {{
 											'Content-Type':'application/json'
