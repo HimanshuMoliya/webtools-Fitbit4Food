@@ -579,8 +579,8 @@ def start_RL_engine():
 	# start reinforcement_learning_engine if not started
 	reinforcement_engine_started = True
 	import subprocess
-	# subprocess.Popen(['python', 'reinforcement_engine.py'], close_fds=True)
-	subprocess.Popen(['/home/appuser/venv/bin/python', 'reinforcement_engine.py'], close_fds=True)
+	subprocess.Popen(['python', 'reinforcement_engine.py'], close_fds=True)
+	# subprocess.Popen(['/home/appuser/venv/bin/python', 'reinforcement_engine.py'], close_fds=True)
  
 # main function
 if __name__ == '__main__':
