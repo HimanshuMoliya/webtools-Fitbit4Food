@@ -189,9 +189,8 @@ class Recommendation_Engine:
             # # filter distance using THRESHOLD
             # THRESHOLD > 2.1 for get products form only title. (distances_1>=2.1 sava as it is)
             # CASE 1 Output
-            recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['distances_1'], ascending=False)
-            # FOR RL
-            # recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['RL_weights'], ascending=False)
+            # recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['distances_1'], ascending=False)
+            recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['RL_weights'], ascending=False)
 
             # CASE 2 / Priority 2 user input + PREFERENCE + other attributes 
             # select column form recommendation_list for priority 2 and further process 
@@ -206,9 +205,9 @@ class Recommendation_Engine:
             recommendation_list_priority2['distances_2'] = self.find_tfidf_and_cosine(other_data, USER_PREFERENCE_TEXT)
 
             # sort data CASE 2
-            recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['distances_2'], ascending=False)
-            # FOR RL
-            # recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['RL_weights'], ascending=False)
+            # recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['distances_2'], ascending=False)
+            
+            recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['RL_weights'], ascending=False)
 
             #print("New LEN: ", len(recommendation_list_priority2.index))
             #print(recommendation_list_priority2)
