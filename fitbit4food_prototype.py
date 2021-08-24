@@ -586,7 +586,7 @@ def start_RL_engine():
 if __name__ == '__main__':
 	recommendation_engine_gui()
 
-	reinforcement_learning_enable = False
+	reinforcement_learning_enable = True
 
 	if reinforcement_learning_enable:
 		start_RL_engine()

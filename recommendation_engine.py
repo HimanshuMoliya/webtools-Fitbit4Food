@@ -401,6 +401,11 @@ class Recommendation_Engine:
                 print('Error in Data order manipulation',e)
                 pass
 
+            print(self.recommendation_list.head())
+            self.recommendation_list['colFromIndex'] = self.recommendation_list.index
+            self.recommendation_list = self.recommendation_list.sort_values(['RL_weights','colFromIndex'], ascending = (False, True))
+            print(self.recommendation_list.head())
+
             # RL based TOP priority
 
             # self.dynamic_data_title = self.dynamic_data['ProductTitle'].values.tolist()
@@ -419,11 +424,10 @@ class Recommendation_Engine:
             # print(self.recommendation_list)
 
 
-
-
             # remove features and distances column from output data
             del self.recommendation_list['features']
             del self.recommendation_list['distances']
+            del self.recommendation_list['colFromIndex']
 
             # merge RL data and standard data without RL
             # self.recommendation_list = self.dynamic_list_1.append(self.recommendation_list, ignore_index = True)
