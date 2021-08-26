@@ -31,9 +31,10 @@ def reward_operation():
         # Object of database handler
         db_obj = dbHandler.DbController()
         data = request.get_json(silent=True)
+        # print("RL_received : ", data['selected_weights'])
         list_of_tuple = (data['URL'],data['Product_Title'],data['tag'],data['Product_Price'],data['Product_Volume'],data['price_per_base_volume'],data['Category'],data['Product_Detail'],data['Ingredients'],data['Nutritional_information'],data['Allergen_warnings'],data['Claims'],data['Endorsements'],data['Product_Image'],data['Product_origin'])
         # print(list_of_tuple)
-        out = db_obj.reward_product(list_of_tuple)
+        out = db_obj.reward_product(list_of_tuple, data['selected_weights'])
         if out == True:
             response = make_response(json.dumps({
                 'Status': out
@@ -55,7 +56,9 @@ def feedback_operation():
         data = request.get_json(silent=True)
         list_of_tuple = (data['URL'],data['Product_Title'],data['tag'],data['Product_Price'],data['Product_Volume'],data['price_per_base_volume'],data['Category'],data['Product_Detail'],data['Ingredients'],data['Nutritional_information'],data['Allergen_warnings'],data['Claims'],data['Endorsements'],data['Product_Image'],data['Product_origin'])
         # print(list_of_tuple)
-        out = db_obj.feedback_product(list_of_tuple)
+        # print("RL_received_feedback : ", data['selected_weights'])
+        
+        out = db_obj.feedback_product(list_of_tuple, data['selected_weights'])
         if out == True:
             response = make_response(json.dumps({
                 'Status': out

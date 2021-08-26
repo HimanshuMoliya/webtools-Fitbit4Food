@@ -352,7 +352,7 @@ class Recommendation_Engine:
         return KEYWORD, USER_PREFERENCE
 
     # this function will help to get recommendations
-    def recommendations_from_keyword(self, KEYWORD, THRESHOLD = 2, USER_PREFERENCE=[]):
+    def recommendations_from_keyword(self, KEYWORD, THRESHOLD = 2, USER_PREFERENCE=[], preset = "RL_weights"):
         try: 
             # null input condition get recommendation based on preference
             if KEYWORD == '': 
@@ -401,10 +401,12 @@ class Recommendation_Engine:
                 print('Error in Data order manipulation',e)
                 pass
 
-            print(self.recommendation_list.head())
+
+            # print("RE preset", preset)
+            # print(self.recommendation_list.head())
             self.recommendation_list['colFromIndex'] = self.recommendation_list.index
-            self.recommendation_list = self.recommendation_list.sort_values(['RL_weights','colFromIndex'], ascending = (False, True))
-            print(self.recommendation_list.head())
+            self.recommendation_list = self.recommendation_list.sort_values([preset,'colFromIndex'], ascending = (False, True))
+            # print(self.recommendation_list.head())
 
             # RL based TOP priority
 

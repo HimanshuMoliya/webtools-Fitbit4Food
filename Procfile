@@ -1,1 +1,0 @@
-web: sh setup.sh && streamlit run fitbit4food_prototype.py

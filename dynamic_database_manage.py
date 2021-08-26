@@ -25,7 +25,11 @@ class DbController():
 					Endorsements CHAR(1000),
 					'ProductImage' CHAR(500),
 					'Productorigin' CHAR(100),
-					'RL_weights' REAL DEFAULT 0
+					'RL_weights' REAL DEFAULT 0,
+					'Healthy_Helena_weights' REAL DEFAULT 0,
+					'Sustainable_Sally_weights' REAL DEFAULT 0,
+					'Dietary_Dave_weights' REAL DEFAULT 0,
+					'Organic_Olivia_weights' REAL DEFAULT 0
 				)'''
 				self.cursor.execute(product_sql)
 				# print("Table created successfully........")
@@ -37,9 +41,13 @@ class DbController():
 				#self.conn.close()
 
 	# Upgrade product weight
-	def reward_product(self, list_of_tuple):
+	def reward_product(self, list_of_tuple, selected_weights):
 		try:
-			self.cursor.execute("INSERT OR IGNORE INTO product_data(URL,'ProductTitle',tag,'ProductPrice','ProductVolume','priceperbasevolume',Category,'ProductDetail',Ingredients,Nutritional_information,'Allergenwarnings',Claims,Endorsements,'ProductImage','Productorigin') VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?) ON CONFLICT(URL) DO UPDATE SET RL_weights =  RL_weights + 1;",list_of_tuple)
+			print("dynamic_selected_weights",selected_weights)
+
+			reward_str = "INSERT OR IGNORE INTO product_data(URL,'ProductTitle',tag,'ProductPrice','ProductVolume','priceperbasevolume',Category,'ProductDetail',Ingredients,Nutritional_information,'Allergenwarnings',Claims,Endorsements,'ProductImage','Productorigin') VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?) ON CONFLICT(URL) DO UPDATE SET {weight} =  {weight} + 1;".format(weight = selected_weights)
+			
+			self.cursor.execute(reward_str, list_of_tuple)
 			# Commit your changes in the database
 			self.conn.commit()
 			return True
@@ -51,9 +59,13 @@ class DbController():
 			return False
 
 	# downgrade product weight
-	def feedback_product(self, list_of_tuple):
+	def feedback_product(self, list_of_tuple, selected_weights):
 		try:
-			self.cursor.execute("INSERT OR IGNORE INTO product_data(URL,'ProductTitle',tag,'ProductPrice','ProductVolume','priceperbasevolume',Category,'ProductDetail',Ingredients,Nutritional_information,'Allergenwarnings',Claims,Endorsements,'ProductImage','Productorigin') VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?) ON CONFLICT(URL) DO UPDATE SET RL_weights =  RL_weights - 1;",list_of_tuple)
+			print("feedback_dynamic_selected_weights",selected_weights)
+			
+			feedback_str = "INSERT OR IGNORE INTO product_data(URL,'ProductTitle',tag,'ProductPrice','ProductVolume','priceperbasevolume',Category,'ProductDetail',Ingredients,Nutritional_information,'Allergenwarnings',Claims,Endorsements,'ProductImage','Productorigin') VALUES(?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?) ON CONFLICT(URL) DO UPDATE SET {weight} =  {weight} - 1;".format(weight = selected_weights)
+			
+			self.cursor.execute(feedback_str,list_of_tuple)
 			# Commit your changes in the database
 			self.conn.commit()
 			return True

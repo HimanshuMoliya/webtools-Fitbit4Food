@@ -1,0 +1,436 @@
+<html>
+<body>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+    .ratings i {
+        font-size: 16px;
+        color: red
+    }
+    .btn-outline-primary:hover {
+        color: #ffffff;
+        background-color: rgb(131, 160, 52);
+    }
+    .modal {
+    position: relative;
+    }
+    .btn-outline-primary:not(:disabled):not(.disabled):active, .show > .btn-outline-primary.dropdown-toggle {
+        color: rgb(255, 255, 255);
+            background-color: #2e6f22;
+            border-color: rgb(0, 123, 255);
+        }
+        .strike-text {
+            color: red;
+            text-decoration: line-through
+        }
+        .product-image {
+            width: 50%
+        }
+
+        .dot {
+            height: 7px;
+            width: 7px;
+            margin-left: 6px;
+            margin-right: 6px;
+            margin-top: 3px;
+            background-color: green;
+            border-radius: 50%;
+            display: inline-block
+        }
+
+        .spec-1 {
+            color: #938787;
+            font-size: 15px
+        }
+
+        h5 {
+            font-weight: 400
+        }
+
+        .para {
+            font-size: 16px
+        }
+
+        .dislike{
+            width: 30px;
+            height: 30px;
+            margin: 0 auto;
+            
+            border-radius: 50%;
+            color: rgb(150, 17, 0);
+            background-color:rgba(38,166,154 ,0.3);
+            border-color: rgba(0,150,136 ,1);
+            border-width: 1px;
+            font-size: 15px;
+        }
+
+    </style>
+    <!--
+    <script>
+
+    $(function() {
+        //Translate text with flask route
+        $("#translate").on("click", function(e) {
+          e.preventDefault();
+          var translateVal = document.getElementById("text-to-translate").value;
+          var languageVal = document.getElementById("select-language").value;
+          var translateRequest = { 'text': translateVal, 'to': languageVal }
+
+          if (translateVal !== "") {
+            var request = $.ajax({
+              url: '/translator',
+              method: 'POST',
+              headers: {
+                  'Content-Type':'application/json'
+              },
+              dataType: 'json',
+              data: JSON.stringify(translateRequest),
+              success: function(data) {
+                //console.log(data);
+
+                for (var i = 0; i < data.length; i++) {
+                  console.log(data[i].translation.text);
+
+                  document.getElementById("translation-result").textContent = data[i].translation.text;
+                  //document.getElementById("detected-language-result").textContent = data[i].detectedLanguage.language;
+                  //if (document.getElementById("detected-language-result").textContent !== ""){
+                  //  document.getElementById("detected-language").style.display = "block";
+                  //}
+                  //document.getElementById("confidence").textContent = data[i].detectedLanguage.score;
+                }
+              }
+            });
+
+                        $.ajax("http://www.example.com/", {
+                type: 'POST',
+                data: {
+                test: 'test1',
+                test2: 'test2'
+                }
+            })
+            request.done(function(data) {
+              console.log(data.translation);
+              document.getElementById("translation-result").textContent = data.translation;
+
+            });
+            
+            request.fail(function(jqXHR, textStatus) {
+              console.log( "Request failed: " + textStatus );
+            });
+
+          };
+        });
+
+
+    </script>
+    -->
+
+
+    <!-- <a class="btn btn-primary btn-md btnAdd" role="button" data-toggle="modal" ><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add</a>
+
+        <div class="modal fade" id="myModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">        
+                <div class="modal-content" style="padding: 8px;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <span class="popdata">
+                </span>
+                </div>
+                </div>
+        </div>    
+        <script>
+        $(".btnAdd").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "process_branch.php",
+                    data: {},
+                    success: function(r){
+                        // HERE YOU HAVE TO CUT AND PASTE THE LAST 2 LINES
+                    return false;
+                    },
+                    dataType: "html"
+                });
+                // THESE 2 LINES CUT AND PASTE INSIDE AJAX SUCCESS
+                $('.modal-content .popdata').html('hai');
+                $('#myModal').modal('show');
+        });
+        </script> -->
+
+
+
+    <!-- The Modal -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+        
+            <!-- Modal Header -->
+            <div class="modal-header">
+            <h4 class="modal-title">Modal Heading</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_detail" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Detail</button>
+                </p>
+                
+                <div class="collapse" id="product_detail">
+                    <div class="card card-body">
+                        {product_detail}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#Ingredients" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Ingredients</button>
+                </p>
+
+                <div class="collapse" id="Ingredients">
+                    <div class="card card-body">
+                        {Ingredients}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#nutritional_information" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Nutritional Information</button>
+                </p>
+
+                <div class="collapse" id="nutritional_information">
+                    <div class="card card-body">
+                        {Nutritional_information}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#allergen_warnings" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Allergen Warning</button>
+                </p>
+
+                <div class="collapse" id="allergen_warnings">
+                    <div class="card card-body">
+                        {Allergen_warnings}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#claims" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Claims</button>
+                </p>
+
+                <div class="collapse" id="claims">
+                    <div class="card card-body">
+                        {Claims}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#endorsements" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Endorsements</button>
+                </p>
+
+                <div class="collapse" id="endorsements">
+                    <div class="card card-body">
+                        {Endorsements}
+                    </div>
+                    <br>
+                </div>
+
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_origin" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Origin</button>
+                </p>
+
+                <div class="collapse" id="product_origin">
+                    <div class="card card-body">
+                        {product_origin}
+                    </div>
+                    <br>
+                </div>
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+            <button type="button" class="btn btn-danger" style = "background-color: #2e6f22; border-color: #2e6f22" data-dismiss="modal">Close</button>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+    <i class="fas fa-thumbs-o-down" aria-hidden="true"></i>
+    <span class="glyphicon glyphicon-euro"></span>
+    <div class="container mt-1 mb-1">
+        <div class="d-flex justify-content-center row">
+            <div class="col-md-10">
+                <div class="container mt-2 mb-2">
+                    <div class="d-flex justify-content-center row">
+                        <div class="col-md-10">
+                            
+                            <div style = "background-color: #c8ffbe;" class="row p-2 border rounded">
+                                
+                                <div class="col-md-3 mt-1" style = "text-align: center;"><img class="img-fluid img-responsive rounded product-image" src="{img_link}">
+                                    
+
+                                    <button class="dislike" id="feedback_{idx}">
+                                        <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                                        
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mt-1">
+                                    <h5>{title}</h5>
+                                    <a class="dislike">
+                                        <i class="fa fa-thumbs-o-down"></i> 
+                                    </a>
+                                    {category_html}
+                                    <p class="text-justify text-truncate para mb-0">{product_detail}<br><br></p>
+                                </div>
+                                <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                                    <div class="d-flex flex-row align-items-center">
+                                        <h4 class="mr-1">$ {price}</h4>
+                                        <span style = "color: #d44d2f; border-color: #2e6f22;">{volume}</span>
+                                    </div>
+                                    <h6 class="{availability_color}">{availability}</h6>
+                                    <div class="d-flex flex-column mt-4">
+                                    <button id="button_1" data-toggle="modal" data-target="#myModal" style = "background-color: #2e6f22; border-color: #2e6f22" class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#myModal"> <a style = "color: rgb(255, 255, 255);"> Unlock More Info </a></button>
+                                    <button onClick="javascript:window.open('{product_link}', '_blank');" id="button_2" style = "color: #2e6f22; border-color: #2e6f22;" class="btn btn-outline-primary btn-sm mt-2" type="button"><a> Add to cart</a></button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var product_data = { URL:"himanshu",Product_Title:"",tag:"ab",Product_Price:"ab",Product_Volume:"ab",price_per_base_volume:"ab",Category:"ab",Product_Detail:"ab",Ingredients:"ab",Nutritional_information:"ab",Allergen_warnings:"ab",Claims:"ab",Endorsements:"ab",Product_Image:"ab",Product_origin:"ab"}
+        $("#button_1, #button_2").on("click", function(e) {
+            e.preventDefault();
+            $.ajax({
+              url: 'http://localhost:8888/reward',
+              method: 'POST',
+              headers: {
+                  'Content-Type':'application/json'
+              },
+              dataType: 'json',
+              data: JSON.stringify(product_data)
+            });
+        });
+    </script>
+
+
+
+
+
+
+    <div id="loop">
+
+    </div>
+    <!--
+    <script>
+        var x ="", i;
+        for (i=1; i<=6; i++) {
+
+          x += `<div class="container mt-1 mb-1">
+                <div class="d-flex justify-content-center row">
+                    <div class="col-md-10">
+                        <div class="container mt-2 mb-2">
+                            <div class="d-flex justify-content-center row">
+                                <div class="col-md-10">
+                                    
+                                    <div style = "background-color: #c8ffbe;" class="row p-2 border rounded">
+                                        <div class="col-md-3 mt-1" style = "text-align: center;"><img class="img-fluid img-responsive rounded product-image" src="{img_link}"></div>
+                                        <div class="col-md-6 mt-1">
+                                            <h5>{title}</h5>
+                                            <a class="dislike">
+                                                <i class="fa fa-thumbs-o-down"></i> 
+                                            </a>
+                                            {category_html}
+                                            <p class="text-justify text-truncate para mb-0">{product_detail}<br><br></p>
+                                        </div>
+                                        <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <h4 class="mr-1">$ {price}</h4>
+                                                <span style = "color: #d44d2f; border-color: #2e6f22;">{volume}</span>
+                                            </div>
+                                            <h6 class="{availability_color}">{availability}</h6>
+                                            <div class="d-flex flex-column mt-4">
+                                            <button id="button_1" data-toggle="modal" data-target="#myModal" style = "background-color: #2e6f22; border-color: #2e6f22" class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#myModal"> <a style = "color: rgb(255, 255, 255);"> Unlock More Info </a></button>
+                                            <button onClick="javascript:window.open('{product_link}', '_blank');" id="button_2" style = "color: #2e6f22; border-color: #2e6f22;" class="btn btn-outline-primary btn-sm mt-2" type="button"><a> Add to cart</a></button></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+            </div>`
+
+          //x + "<h" + i + ">Heading " + i + "</h" + i + ">";
+        }
+        document.getElementById("loop").innerHTML = x;
+        </script>
+    -->
+</body>
+</html>
+
+<!-- 
+<script>
+    var product_data_{idx} = { URL:{product_link}, Product_Title:{title},tag:"",Product_Price:{price},Product_Volume:{volume},price_per_base_volume:"",Category:{category_html},Product_Detail:{product_detail},Ingredients:{Ingredients},Nutritional_information:{Nutritional_information},Allergen_warnings:{Allergen_warnings},Claims:{Claims},Endorsements:{Endorsements},Product_Image:{img_link},Product_origin:""}
+    $("#reward_{idx}").on("click", function(e) {
+        e.preventDefault();
+        $.ajax({
+        url: 'http://localhost:8888/feedback',
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        dataType: 'json',
+        data: JSON.stringify(product_data_{idx})
+        });
+    });
+</script>
+
+
+
+						# <script>
+							# var product_data_{idx} = {{ URL:{product_link}, Product_Title:{title},tag:"",Product_Price:{price},Product_Volume:{volume},price_per_base_volume:"",Category:{category_html},Product_Detail:{product_detail},Ingredients:{Ingredients},Nutritional_information:{Nutritional_information},Allergen_warnings:{Allergen_warnings},Claims:{Claims},Endorsements:{Endorsements},Product_Image:{img_link},Product_origin:""}}
+							# $("#reward_1").on("click", function(e){{
+							# 	e.preventDefault();
+							# 		$.ajax({{
+							# 		url: 'http://localhost:8888/feedback',
+							# 		method: 'POST',
+							# 		headers: {{
+							# 			'Content-Type':'application/json'
+							# 		}},
+							# 		dataType: 'json',
+							# 		data: JSON.stringify({{'a':'1'}})
+							# 		}});
+							# }});
+							
+
+
+
+
+						# 		var product_data_{{idx}} = { URL:{{product_link}}, Product_Title:{{title}},tag:"",Product_Price:{{price}},Product_Volume:{{volume}},price_per_base_volume:"",Category:{{category_html}},Product_Detail:{{product_detail}},Ingredients:{{Ingredients}},Nutritional_information:{{Nutritional_information}},Allergen_warnings:{{Allergen_warnings}},Claims:{{Claims}},Endorsements:{{Endorsements}},Product_Image:{{img_link}},Product_origin:""}
+						# 		$("#reward_{{idx}}").on("click", function(e) {
+						# 			e.preventDefault();
+						# 			$.ajax({
+						# 			url: 'http://localhost:8888/feedback',
+						# 			method: 'POST',
+						# 			headers: {
+						# 				'Content-Type':'application/json'
+						# 			},
+						# 			dataType: 'json',
+						# 			data: JSON.stringify(product_data_{{idx}})
+						# 			});
+						# 		});
+						# 	</script>
+
+
+
+
+ -->

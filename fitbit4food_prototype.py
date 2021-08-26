@@ -72,20 +72,28 @@ def recommendation_engine_gui():
 	# Title 'NLP based recommendation engine' into HTML
 	stc.html(HTML_TITLE)
 
+	selected_weights = "RL_weights"
 	# Select All Preferences option
 	if user_preset == "Healthy Helena":
 		my_preference_preset = ["Additives Free", "Sugar Free", "Dairy Free", "Gluten Free", "Vegan"]
+		selected_weights = "Healthy_Helena_weights"
 	elif user_preset == "Sustainable Sally":
 		my_preference_preset = ["Organic", "Free Range", "Vegan", "Non GMO", "Palm Oil Free", "Pesticide Free"]
+		selected_weights = "Sustainable_Sally_weights"
 	elif user_preset == "Dietary Dave":
 		my_preference_preset = ["Halal", "Vegan", "Gluten Free", "Dairy Free", "Sugar Free"]
+		selected_weights = "Dietary_Dave_weights"
+
 	elif user_preset == "Only Organic Olivia":
 		my_preference_preset = ["Organic"]
+		selected_weights = "Organic_Olivia_weights"
 	else:
 		pass
 
 	# Set user preference
 	my_preference = st.sidebar.multiselect("Set your preferences (priority wise)", preference_option, default=my_preference_preset)
+
+	print("selected_weights by user", selected_weights)
 
 	if "All" in my_preference:
 		my_preference = ["Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "Palm Oil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal"]
@@ -123,7 +131,7 @@ def recommendation_engine_gui():
 			# Get recommendation using our object (Only single function call)
 			# TODO: ADD GUI for empty_flag if product list is empty
 			print("my_preference: ",my_preference)
-			recommendations, len_of_list, empty_flag = recommendation_engine.recommendations_from_keyword(final_keyword, THRESHOLD= 2, USER_PREFERENCE= my_preference)
+			recommendations, len_of_list, empty_flag = recommendation_engine.recommendations_from_keyword(final_keyword, THRESHOLD= 2, USER_PREFERENCE= my_preference, preset = selected_weights)
 
 			# Condition if user input is empty -> pass user preference  
 			if final_keyword.strip() == '':
@@ -471,7 +479,7 @@ def recommendation_engine_gui():
 							</div>
 							<script type = "text/javascript">
 							<!--
-								var product_data_{idx} = {{ URL:"{product_link}", Product_Title:"{title}",tag:"",Product_Price:"{price}",Product_Volume:"{volume}",price_per_base_volume:"",Category:"{category_list}",Product_Detail:"{product_detail}",Ingredients:"{Ingredients}",Nutritional_information:"{Nutritional_information_json}",Allergen_warnings:"{Allergen_warnings}",Claims:"{Claims}",Endorsements:"{Endorsements}",Product_Image:"{img_link}",Product_origin:""}}
+								var product_data_{idx} = {{ URL:"{product_link}", Product_Title:"{title}",tag:"",Product_Price:"{price}",Product_Volume:"{volume}",price_per_base_volume:"",Category:"{category_list}",Product_Detail:"{product_detail}",Ingredients:"{Ingredients}",Nutritional_information:"{Nutritional_information_json}",Allergen_warnings:"{Allergen_warnings}",Claims:"{Claims}",Endorsements:"{Endorsements}",Product_Image:"{img_link}",Product_origin:"",selected_weights:"{selected_weights}"}}
 
 								$("#reward_{idx}").on("click", function(e){{
 									e.preventDefault();
@@ -506,7 +514,7 @@ def recommendation_engine_gui():
 							-->
 							</script>
 
-						'''.format(idx= idx, product_link=col1, title=col2, img_link=col3, price=col4, volume=col5, availability=availability, availability_color=availability_color, category_html=category_html, product_detail=col7, Ingredients=col8, Nutritional_information=col9, Nutritional_information_json = col9_for_Json, Allergen_warnings=col10, Claims=col11, Endorsements=col12, product_origin=col13, category_list = col6)
+						'''.format(idx= idx, product_link=col1, title=col2, img_link=col3, price=col4, volume=col5, availability=availability, availability_color=availability_color, category_html=category_html, product_detail=col7, Ingredients=col8, Nutritional_information=col9, Nutritional_information_json = col9_for_Json, Allergen_warnings=col10, Claims=col11, Endorsements=col12, product_origin=col13, category_list = col6, selected_weights = selected_weights)
 
 
 				# complate html tag
