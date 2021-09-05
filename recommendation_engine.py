@@ -481,7 +481,7 @@ if __name__ == "__main__":
             # empty_flag is for empty recommendation_list :: Helps to dispaly 'no product available with this key word' in site
             t3 = time.time()
 
-            recommendations, len_of_list, empty_flag = recommendation_engine.recommendations_from_keyword(keyword, THRESHOLD= 2, USER_PREFERENCE= ['Nuts Chocolate'])
+            recommendations, len_of_list, empty_flag = recommendation_engine.recommendations_from_keyword(keyword, THRESHOLD= 2, USER_PREFERENCE= ['Nuts Chocolate'], preset = "RL_weights")
             t4 = time.time()
             print("Time 2: ", t4-t3)
 
