@@ -226,40 +226,69 @@ class Recommendation_Engine:
 
         return recommendation_list_priority1
 
+    # prioritize preference add word weights on preferences
+    def prioritize_preference(self, USER_PREFERENCE, turnon = True):
+        """
+        input : USER_PREFERENCE
+        output: add weight and return USER_PREFERENCE
+        """
+        preference_length = len(USER_PREFERENCE)
+
+        my_preference = ''
+
+        if preference_length != 0 and turnon:
+
+            if preference_length == 1 : preference_length = 5
+            print("preference_length", preference_length)
+            
+            for idx, single_preference in enumerate(USER_PREFERENCE):
+                
+                print(single_preference)
+                my_preference += (" " + single_preference.lower()) * (preference_length - idx + 1)
+
+        return my_preference.strip()
+
     # map category with USER_PREFERENCE
     def map_user_preference(self, USER_PREFERENCE=[]):
         # case: USER_PREFERENCE is none then use main categories only
         if len(USER_PREFERENCE) == 0:
             return ''
         else:
-            my_preference = ''
+            
+            # add weight on USER_PREFERENCE
+            my_preference = self.prioritize_preference(USER_PREFERENCE)
+            print("my_preference", my_preference)
+            
+            '''
             for preference in USER_PREFERENCE:
                 # print(preference)
                 if preference.lower() == "organic":
-                    my_preference += 'organic Fruit & Veg Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Drinks Beer & Wine Ice Cream & Sorbet Health & Beauty '
+                    my_preference += ' Fruit & Veg Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Drinks Beer & Wine Ice Cream & Sorbet Health & Beauty'
                 elif preference.lower() == "non gmo":
-                    my_preference += 'non gmo Fruit & Veg Frozen Baby & Child Fridge & Deli Bakery Pantry '
+                    my_preference += ' Fruit & Veg Frozen Baby & Child Fridge & Deli Bakery Pantry'
                 elif preference.lower() == "pesticide free":
-                    my_preference += 'pesticide free Fruit & Veg Meat & Seafood Baby & Child Fridge & Deli Pantry '
+                    my_preference += ' Fruit & Veg Meat & Seafood Baby & Child Fridge & Deli Pantry'
                 elif preference.lower() == "free range":
-                    my_preference += 'Free Range Eggs Meat & Seafood Frozen Meat Fridge & Deli Pantry Pet Cage free'
+                    my_preference += ' Eggs Meat & Seafood Frozen Meat Fridge & Deli Pantry Pet Cage free'
                 elif preference.lower() == "nut free":
-                    my_preference += 'nut free Frozen Fridge & Deli Bakery Pantry '
+                    my_preference += ' Frozen Fridge & Deli Bakery Pantry'
                 elif preference.lower() == "dairy free":
-                    my_preference += 'dairy free Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet'
                 elif preference.lower() == "palm oil free":
-                    my_preference += 'palm oil free Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet'
                 elif preference.lower() == "additives free":
-                    my_preference += 'additives free Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet Health & Beauty'
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet Health & Beauty'
                 elif preference.lower() == "sugar free":
-                    my_preference += 'sugar free Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet'
                 elif preference.lower() == "gluten free":
-                    my_preference += 'gluten free Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet'
                 elif preference.lower() == "vegan":
-                    my_preference += 'vegan Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet'
                 elif preference.lower() == "halal":
-                    my_preference += 'halal Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet Health & Beauty '
+                    my_preference += ' Frozen Meat & Seafood Baby & Child Fridge & Deli Bakery Pantry Pet Ice Cream & Sorbet Health & Beauty'
             my_preference = my_preference.lower()
+            '''
+        
         return my_preference
 
      # Check collocation of the preference to improve the accuracy in case of 'Non GMO', 'Sugar Free' etc
@@ -406,7 +435,7 @@ class Recommendation_Engine:
             # print(self.recommendation_list.head())
             self.recommendation_list['colFromIndex'] = self.recommendation_list.index
             self.recommendation_list = self.recommendation_list.sort_values([preset,'colFromIndex'], ascending = (False, True))
-            # print(self.recommendation_list.head())
+            print(self.recommendation_list.head())
 
             # RL based TOP priority
 

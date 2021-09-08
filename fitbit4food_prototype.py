@@ -62,7 +62,17 @@ def recommendation_engine_gui():
 	choice = st.sidebar.selectbox("Options",menu)
 
 	# initialize preference_option and add to visual HTML(Front End)
-	preference_option = ["All", "Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "Palm Oil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal", "None"]
+	preference_option = ["All", "Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal", "None"]
+	
+	diet_health_option = ["Vegetarian", "Vegan","Halal","Keto","Paleo","Nut Free","Gluten Free","Sugar Free","Non GMO", "Low Fat"]
+
+	environment_option = ["Organic", "Free Range", "Carbon Neutral", "Feed Lot", "Part Vegetable Protein", "Water Safe", "Low Irrigation", "Seaweed Fed", "Grain Finished", "Solar Power Produced", "Grass Fed"]
+
+	packaging_option = ["Recycled","Plastic","FSC Certified","PCT Plastic","Recyclable Plastic", "Recyclable Plastic Level 2"]
+	
+	socialization_option = ["Farmer Video","Fair Trade","Non Toxic Working Conditions","Donates Meals To Children In Need (Meat The Need)","Living Wage For Workers"]
+
+
 	my_preference_preset = 'None'
 
 	# preset user profile
@@ -78,10 +88,10 @@ def recommendation_engine_gui():
 		my_preference_preset = ["Additives Free", "Sugar Free", "Dairy Free", "Gluten Free", "Vegan"]
 		selected_weights = "Healthy_Helena_weights"
 	elif user_preset == "Sustainable Sally":
-		my_preference_preset = ["Organic", "Free Range", "Vegan", "Non GMO", "Palm Oil Free", "Pesticide Free"]
+		my_preference_preset = ["Organic", "Free Range", "Vegan", "Non GMO"]
 		selected_weights = "Sustainable_Sally_weights"
 	elif user_preset == "Dietary Dave":
-		my_preference_preset = ["Halal", "Vegan", "Gluten Free", "Dairy Free", "Sugar Free"]
+		my_preference_preset = ["Halal", "Gluten Free"]
 		selected_weights = "Dietary_Dave_weights"
 
 	elif user_preset == "Only Organic Olivia":
@@ -96,7 +106,7 @@ def recommendation_engine_gui():
 	print("selected_weights by user", selected_weights)
 
 	if "All" in my_preference:
-		my_preference = ["Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "Palm Oil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal"]
+		my_preference = ["Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal"]
 
 	print("my_preference_preset: ", my_preference_preset)
 
@@ -110,6 +120,11 @@ def recommendation_engine_gui():
 		sort_option = ["Relevance", "Price Low to High","Price High to Low", "Unit Price Low to High"]
 		sort_by = st.sidebar.selectbox("Sort By", sort_option)
 		
+		diet_health_preference = st.sidebar.multiselect("Diet Health options", diet_health_option)
+		environment_preference = st.sidebar.multiselect("Environment options", environment_option)
+		packaging_preference = st.sidebar.multiselect("Packaging options", packaging_option)
+		socialization_preference = st.sidebar.multiselect("Socialization options", socialization_option)
+
 		# set sub header
 		st.subheader("Search Product")
 
