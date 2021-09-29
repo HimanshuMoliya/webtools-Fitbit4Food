@@ -18,7 +18,7 @@ import sqlite3
 import pandas as pd
 
 class Recommendation_Engine:
-    def __init__(self, my_preference):
+    def __init__(self, my_preference = []):
 
         # read data from csv
         # self._read_csv("all_product_data.csv")
@@ -408,7 +408,11 @@ class Recommendation_Engine:
             # Standard listing without RL
             # Create list and append user input   
             self.data_list = self.dynamic_data['ProductTitle'].values.tolist()
-            
+            # self.data_list  = self.dynamic_data['ProductTitle'].astype(str) + ' ' + self.dynamic_data['Claims'].astype(str)
+
+            # self.data_list = self.data_list.values.tolist()
+            # print(self.data_list)
+
             # Priority 4 : (GET all product associated with keyword using title)
             self.dynamic_data['distances'] = self.find_tfidf_and_cosine(self.data_list, KEYWORD)
 

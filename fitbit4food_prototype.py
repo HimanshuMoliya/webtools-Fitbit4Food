@@ -241,7 +241,7 @@ def recommendation_engine_gui():
 				#st.write(sub_recommendations)
 
 				# Select required column
-				myrows = zip(sub_recommendations['URL'], sub_recommendations['ProductTitle'], sub_recommendations['ProductImage'], sub_recommendations['ProductPrice'], sub_recommendations['ProductVolume'], sub_recommendations['Category'], sub_recommendations['ProductDetail'], sub_recommendations['Ingredients'], sub_recommendations['Nutritional_information'], sub_recommendations['Allergenwarnings'], sub_recommendations['Claims'], sub_recommendations['Endorsements'], sub_recommendations['Productorigin'])
+				myrows = zip(sub_recommendations['URL'], sub_recommendations['ProductTitle'], sub_recommendations['ProductImage'], sub_recommendations['ProductPrice'], sub_recommendations['ProductVolume'], sub_recommendations['Category'], sub_recommendations['ProductDetail'], sub_recommendations['Ingredients'], sub_recommendations['Nutritional_information'], sub_recommendations['Allergenwarnings'], sub_recommendations['Claims'], sub_recommendations['Endorsements'], sub_recommendations['Productorigin'], sub_recommendations['predicted_tags'])
 				
 				# html header
 				PRODUCT_CARD = '''
@@ -313,7 +313,7 @@ def recommendation_engine_gui():
 						<body style = "background-color: transparent;">'''
 	
 				# loop on all product and generate HTML for each one and add into PRODUCT_CARD as string
-				for idx, (col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11,col12,col13) in enumerate(myrows):
+				for idx, (col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11,col12,col13, col14) in enumerate(myrows):
 							# create HTML product card
 
 							if col4 is None:
@@ -353,6 +353,18 @@ def recommendation_engine_gui():
 								col12 = "No Information to display"
 							if col13 is None:
 								col13 = "No Information to display"
+
+							# convert predicted_tag string to list
+							predicted_tags_html = ""
+							if len(col14) > 4:
+								import ast
+								col14_array = ast.literal_eval(col14)
+								predicted_tags_html = '''<div class="mt-1 mb-1 spec-1">'''
+								for i in col14_array:
+									predicted_tags_html += '''<span class="dot"></span> <span>{value}</span>'''.format(value=i)
+								predicted_tags_html += "<br></div>"
+
+
 
 							# print(col9_for_Json)
 							
@@ -470,7 +482,7 @@ def recommendation_engine_gui():
 	
 												{category_html}
 												<p class="text-justify text-truncate para mb-0">{product_detail}<br><br></p>
-												
+												{predicted_tags_html}
 											</div>
 											<div class="align-items-center align-content-center col-md-3 border-left mt-1">
 											
@@ -529,7 +541,7 @@ def recommendation_engine_gui():
 							-->
 							</script>
 
-						'''.format(idx= idx, product_link=col1, title=col2, img_link=col3, price=col4, volume=col5, availability=availability, availability_color=availability_color, category_html=category_html, product_detail=col7, Ingredients=col8, Nutritional_information=col9, Nutritional_information_json = col9_for_Json, Allergen_warnings=col10, Claims=col11, Endorsements=col12, product_origin=col13, category_list = col6, selected_weights = selected_weights)
+						'''.format(idx= idx, product_link=col1, title=col2, img_link=col3, price=col4, volume=col5, availability=availability, availability_color=availability_color, category_html=category_html, product_detail=col7, Ingredients=col8, Nutritional_information=col9, Nutritional_information_json = col9_for_Json, Allergen_warnings=col10, Claims=col11, Endorsements=col12, product_origin=col13, category_list = col6, selected_weights = selected_weights, predicted_tags_html = predicted_tags_html)
 
 
 				# complate html tag
