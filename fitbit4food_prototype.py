@@ -62,8 +62,9 @@ def recommendation_engine_gui():
 	choice = st.sidebar.selectbox("Options",menu)
 
 	# initialize preference_option and add to visual HTML(Front End)
-	preference_option = ["All", "Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal", "None"]
-	
+	# preference_option = ["All", "Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal", "None"]
+	preference_option = ["None", "Diet Health", "Environment", "Packaging", "Socialization"]
+
 	diet_health_option = ["Vegetarian", "Vegan","Halal","Keto","Paleo","Nut Free","Gluten Free","Sugar Free","Non GMO", "Low Fat"]
 
 	environment_option = ["Organic", "Free Range", "Carbon Neutral", "Feed Lot", "Part Vegetable Protein", "Water Safe", "Low Irrigation", "Seaweed Fed", "Grain Finished", "Solar Power Produced", "Grass Fed"]
@@ -101,17 +102,15 @@ def recommendation_engine_gui():
 		pass
 
 	# Set user preference
-	my_preference = st.sidebar.multiselect("Set your preferences (priority wise)", preference_option, default=my_preference_preset)
+	# my_preference = st.sidebar.multiselect("Set your preferences (priority wise)", preference_option, default=my_preference_preset)
+	first_preference = st.sidebar.selectbox("Select your preferences (priority wise)", preference_option)
 
 	print("selected_weights by user", selected_weights)
 
-	if "All" in my_preference:
-		my_preference = ["Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal"]
+	# if "All" in my_preference:
+	#	my_preference = ["Organic", "Non GMO", "Pesticide Free", "Free Range", "Nut Free", "Dairy Free", "PalmOil Free", "Additives Free", "Sugar Free", "Gluten Free", "Vegan", "Halal"]
 
 	print("my_preference_preset: ", my_preference_preset)
-
-	# create object of our backend script
-	recommendation_engine = Recommendation_Engine(my_preference)
 
 	# Home option
 	if choice == "Home":
@@ -119,11 +118,20 @@ def recommendation_engine_gui():
 		# initialize sorting option and add to visual HTML(Front End)
 		sort_option = ["Relevance", "Price Low to High","Price High to Low", "Unit Price Low to High"]
 		sort_by = st.sidebar.selectbox("Sort By", sort_option)
-		
-		diet_health_preference = st.sidebar.multiselect("Diet Health options", diet_health_option)
-		environment_preference = st.sidebar.multiselect("Environment options", environment_option)
-		packaging_preference = st.sidebar.multiselect("Packaging options", packaging_option)
-		socialization_preference = st.sidebar.multiselect("Socialization options", socialization_option)
+
+		if first_preference == "Diet Health":
+			my_preference = st.sidebar.multiselect("Diet Health options", diet_health_option)
+		elif first_preference == "Environment":
+			my_preference = st.sidebar.multiselect("Environment options", environment_option)
+		elif first_preference == "Packaging":
+			my_preference = st.sidebar.multiselect("Packaging options", packaging_option)
+		elif first_preference == "Socialization":
+			my_preference = st.sidebar.multiselect("Socialization options", socialization_option)
+		else:
+			my_preference = "None"
+
+		# create object of our backend script
+		recommendation_engine = Recommendation_Engine(my_preference)
 
 		# set sub header
 		st.subheader("Search Product")
