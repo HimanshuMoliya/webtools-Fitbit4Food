@@ -135,9 +135,6 @@ def recommendation_engine_gui():
         else:
             my_preference = "None"
 
-        # create object of our backend script
-        recommendation_engine = Recommendation_Engine(my_preference)
-
         # Create the tabs
         st.markdown(
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">',
@@ -171,15 +168,20 @@ def recommendation_engine_gui():
         st.markdown(tabs_html, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
+        # set sub header
+        st.subheader("Search Product")
+
+        # Take user input
+        product_name = st.text_input("Enter Product name")
+
+        # initialize and add search button into HTML
+        submit = st.button('Search')
+
         if active_tab == "Countdown":
-            # set sub header
-            st.subheader("Search Product")
-
-            # Take user input
-            product_name = st.text_input("Enter Product name")
-
-            # initialize and add search button into HTML
-            submit = st.button('Search')
+            
+            # create object of our backend script
+            recommendation_engine = Recommendation_Engine(my_preference)
+            
 
             # Enable mouse click or keyboard "enter / return " key to search product
             if submit or product_name:
@@ -191,7 +193,6 @@ def recommendation_engine_gui():
                     final_keyword = scorecard_obj.correct_spell(final_keyword)
 
                 # Get recommendation using our object (Only single function call)
-                # TODO: ADD GUI for empty_flag if product list is empty
                 print("my_preference: ", my_preference)
                 recommendations, len_of_list, empty_flag = recommendation_engine.recommendations_from_keyword(final_keyword,
                                                                                                               THRESHOLD=2,
@@ -306,7 +307,6 @@ def recommendation_engine_gui():
                             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
                             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
                             <style>
                                 .ratings i {
                                     font-size: 16px;
@@ -363,14 +363,15 @@ def recommendation_engine_gui():
                                     border-width: 1px;
                                     font-size: 15px;
                                 }
-    
+
                             </style>
-    
-                            <body style = "background-color: transparent;">'''
+        
+                            <body style = "background-color: transparent;">
+                        '''
 
                     # loop on all product and generate HTML for each one and add into PRODUCT_CARD as string
                     for idx, (
-                    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13) in enumerate(
+                    col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14) in enumerate(
                             myrows):
                         # create HTML product card
 
@@ -425,181 +426,179 @@ def recommendation_engine_gui():
                         # print(col9_for_Json)
 
                         PRODUCT_CARD += '''
-                                <!-- The Modal -->
-                                <div class="modal" id="card_{idx}">
-                                    <div class="modal-dialog modal-dialog-scrollable">
-                                    <div class="modal-content">
-    
-                                        <!-- Modal Header -->
-                                        <div class="modal-header">
-                                        <h4 class="modal-title">{title}</h4>
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <!-- The Modal -->
+                        <div class="modal" id="card_{idx}">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                            
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                <h4 class="modal-title">{title}</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+
+                                    <p>
+                                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_detail" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Detail</button>
+                                    </p>
+
+                                    <div class="collapse" id="product_detail">
+                                        <div class="card card-body">
+                                            {product_detail}
                                         </div>
-    
-                                        <!-- Modal body -->
-                                        <div class="modal-body">
-    
-                                            <p>
-                                            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#special_indgredients" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Special Ingredients</button>
-                                            </p>
-    
-                                            <div class="collapse" id="special_indgredients">
-                                                <div class="card card-body">
-                                                    {special_indgredients}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_detail" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Detail</button>
-                                            </p>
-    
-                                            <div class="collapse" id="product_detail">
-                                                <div class="card card-body">
-                                                    {product_detail}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_description" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Description</button>
-                                            </p>
-    
-                                            <div class="collapse" id="product_description">
-                                                <div class="card card-body">
-                                                    {product_description}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_information" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Information</button>
-                                            </p>
-    
-                                            <div class="collapse" id="product_information">
-                                                <div class="card card-body">
-                                                    {product_information}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#allergen_information" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Allergen Information</button>
-                                            </p>
-    
-                                            <div class="collapse" id="allergen_information">
-                                                <div class="card card-body">
-                                                    {allergen_information}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#important_information" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Important Information</button>
-                                            </p>
-    
-                                            <div class="collapse" id="important_information">
-                                                <div class="card card-body">
-                                                    {important_information}
-                                                </div>
-                                                <br>
-                                            </div>
-    
-                                            <p>
-                                                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_reviews" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Reviews</button>
-                                            </p>
-    
-                                            <div class="collapse" id="product_reviews">
-                                                <div class="card card-body">
-                                                    {product_reviews}
-                                                </div>
-                                                <br>
-                                            </div>
-                                        </div>
-    
-                                        <!-- Modal footer -->
-                                        <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" style = "background-color: #2e6f22; border-color: #2e6f22" data-dismiss="modal">Close</button>
-                                        </div>
+                                        <br>
                                     </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#Ingredients" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Ingredients</button>
+                                    </p>
+
+                                    <div class="collapse" id="Ingredients">
+                                        <div class="card card-body">
+                                            {Ingredients}
+                                        </div>
+                                        <br>
+                                    </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#nutritional_information" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Nutritional Information</button>
+                                    </p>
+
+                                    <div class="collapse" id="nutritional_information">
+                                        <div class="card card-body">
+                                            {Nutritional_information}
+                                        </div>
+                                        <br>
+                                    </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#allergen_warnings" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Allergen Warning</button>
+                                    </p>
+
+                                    <div class="collapse" id="allergen_warnings">
+                                        <div class="card card-body">
+                                            {Allergen_warnings}
+                                        </div>
+                                        <br>
+                                    </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#claims" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Claims</button>
+                                    </p>
+
+                                    <div class="collapse" id="claims">
+                                        <div class="card card-body">
+                                            {Claims}
+                                        </div>
+                                        <br>
+                                    </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#endorsements" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Endorsements</button>
+                                    </p>
+
+                                    <div class="collapse" id="endorsements">
+                                        <div class="card card-body">
+                                            {Endorsements}
+                                        </div>
+                                        <br>
+                                    </div>
+
+                                    <p>
+                                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#product_origin" style = "background-color: #2e6f22; border-color: #2e6f22" aria-expanded="false" aria-controls="collapse">Product Origin</button>
+                                    </p>
+
+                                    <div class="collapse" id="product_origin">
+                                        <div class="card card-body">
+                                            {product_origin}
+                                        </div>
+                                        <br>
                                     </div>
                                 </div>
-    
-                                <div class="container mt-2 mb-2">
-                                    <div class="d-flex justify-content-center row">
-                                        <div class="col-md-11">
-    
-                                            <div style = "background-color: #c8ffbe;" class="row p-2 border rounded">
-    
-                                                <div class="col-md-3 mt-1" style = "text-align: center;"><img class="img-fluid img-responsive rounded product-image" src="{img_link}">
-                                                </div>
-                                                <div class="col-md-6 mt-1">
-                                                    <h5>{title}</h5>
-    
-                                                    {category_html}
-                                                    <p class="text-justify text-truncate para mb-0">{product_detail}<br><br></p>
-                                                    {predicted_tags_html}
-                                                </div>
-                                                <div class="align-items-center align-content-center col-md-3 border-left mt-1">
-    
-                                                    <div class="d-flex flex-row align-items-center">
-                                                        <h4 class="mr-1">$ {price}</h4>
-                                                        <span style = "color: #d44d2f; border-color: #2e6f22;">{volume}</span>
-                                                    </div>
-                                                    <h6 class="{availability_color}">{availability}</h6>
-                                                    <button class="dislike" id="feedback_{idx}">
-                                                    <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
-                                                    </button>
-                                                    <div class="d-flex flex-column mt-4">
-                                                        <button id="reward_{idx}" data-toggle="modal" data-target="#card_{idx}" style = "background-color: #2e6f22; border-color: #2e6f22" class="btn btn-primary btn-sm"> <a style = "color: rgb(255, 255, 255);"> Unlock More Info </a></button>
-                                                        <button onClick="javascript:window.open('{product_link}', '_blank');" style = "color: #2e6f22; border-color: #2e6f22;" class="btn btn-outline-primary btn-sm mt-2" type="button"><a> Add to cart</a></button>
-                                                    </div>
-                                                </div>
+                                
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" style = "background-color: #2e6f22; border-color: #2e6f22" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="container mt-2 mb-2">
+                            <div class="d-flex justify-content-center row">
+                                <div class="col-md-11">
+
+                                    <div style = "background-color: #c8ffbe;" class="row p-2 border rounded">
+                                        
+                                        <div class="col-md-3 mt-1" style = "text-align: center;"><img class="img-fluid img-responsive rounded product-image" src="{img_link}">
+                                        </div>
+                                        <div class="col-md-6 mt-1">
+                                            <h5>{title}</h5>
+
+                                            {category_html}
+                                            <p class="text-justify text-truncate para mb-0">{product_detail}<br><br></p>
+                                            {predicted_tags_html}
+                                        </div>
+                                        <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                                        
+                                            <div class="d-flex flex-row align-items-center">
+                                                <h4 class="mr-1">$ {price}</h4>
+                                                <span style = "color: #d44d2f; border-color: #2e6f22;">{volume}</span>
+                                            </div>
+                                            <h6 class="{availability_color}">{availability}</h6>
+                                            <button class="dislike" id="feedback_{idx}">
+                                            <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                                            </button>
+                                            <div class="d-flex flex-column mt-4">
+                                                <button id="reward_{idx}" data-toggle="modal" data-target="#card_{idx}" style = "background-color: #2e6f22; border-color: #2e6f22" class="btn btn-primary btn-sm"> <a style = "color: rgb(255, 255, 255);"> Unlock More Info </a></button>
+                                                <button onClick="javascript:window.open('{product_link}', '_blank');" style = "color: #2e6f22; border-color: #2e6f22;" class="btn btn-outline-primary btn-sm mt-2" type="button"><a> Add to cart</a></button>
                                             </div>
                                         </div>
                                     </div>
-    
                                 </div>
-                                <script type = "text/javascript">
-                                <!--
-                                    var product_data_{idx} = {{ URL:"{product_link}", Product_Title:"{title}",tag:"",Product_Price:"{price}",Availability:"{availability}",Special_Ingredients:"special_ingredients",Product_Detail:"{product_detail}",Product_Description:"{product_description}",Product_Info:"{product_information}",Allergen_Info:"{allergen_information}",Important_Info:"{important_information}",Product_Image:"{img_link}",Rating:"rating",Product_Reviews:"{reviews}"}}
-    
-                                    $("#reward_{idx}").on("click", function(e){{
-                                        e.preventDefault();
-                                            $.ajax({{
-                                            url: 'http://127.0.0.1:5000/reward',
-                                            method: 'POST',
-                                            headers: {{
-                                                'Content-Type':'application/json'
-                                            }},
-                                            dataType: 'json',
-                                            data: JSON.stringify(product_data_{idx})
-                                            }});
+                            </div>
+
+                        </div>
+                        <script type = "text/javascript">
+                        <!--
+                            var product_data_{idx} = {{ URL:"{product_link}", Product_Title:"{title}",tag:"",Product_Price:"{price}",Product_Volume:"{volume}",price_per_base_volume:"",Category:"{category_list}",Product_Detail:"{product_detail}",Ingredients:"{Ingredients}",Nutritional_information:"{Nutritional_information_json}",Allergen_warnings:"{Allergen_warnings}",Claims:"{Claims}",Endorsements:"{Endorsements}",Product_Image:"{img_link}",Product_origin:"",selected_weights:"{selected_weights}"}}
+
+                            $("#reward_{idx}").on("click", function(e){{
+                                e.preventDefault();
+                                    $.ajax({{
+                                    url: 'http://127.0.0.1:5000/reward',
+                                    method: 'POST',
+                                    headers: {{
+                                        'Content-Type':'application/json'
+                                    }},
+                                    dataType: 'json',
+                                    data: JSON.stringify(product_data_{idx})
                                     }});
-                                    $("#feedback_{idx}").on("click", function(e){{
-                                        e.preventDefault();
-                                            $.ajax({{
-                                            url: 'http://127.0.0.1:5000/feedback',
-                                            method: 'POST',
-                                            headers: {{
-                                                'Content-Type':'application/json'
-                                            }},
-                                            dataType: 'json',
-                                            data: JSON.stringify(product_data_{idx}),
-                                            success: function(){{
-                                                alert('Thank you for your feedback of product');
-                                            }},
-                                            error: function(){{
-                                                alert('Thank you for your feedback of product [Error]');
-                                            }}
-                                            }});
+                            }});
+                            $("#feedback_{idx}").on("click", function(e){{
+                                e.preventDefault();
+                                    $.ajax({{
+                                    url: 'http://127.0.0.1:5000/feedback',
+                                    method: 'POST',
+                                    headers: {{
+                                        'Content-Type':'application/json'
+                                    }},
+                                    dataType: 'json',
+                                    data: JSON.stringify(product_data_{idx}),
+                                    success: function(){{
+                                        alert('Thank you for your feedback of product');
+                                    }},
+                                    error: function(){{
+                                        alert('Thank you for your feedback of product [Error]');
+                                    }}
                                     }});
-                                -->
-                                </script>
-    
-                            '''.format(idx=idx, product_link=col1, title=col2, img_link=col3, price=col4, availability=col5,
-                                       special_ingredients=col6, product_detail=col7, product_description=col8,
-                                       product_information=col9, allergen_information=col10, important_information=col11, rating=col12, reviews=col3)
+                            }});
+                        -->
+                        </script>
+
+                    '''.format(idx= idx, product_link=col1, title=col2, img_link=col3, price=col4, volume=col5, availability=availability, availability_color=availability_color, category_html=category_html, product_detail=col7, Ingredients=col8, Nutritional_information=col9, Nutritional_information_json = col9_for_Json, Allergen_warnings=col10, Claims=col11, Endorsements=col12, product_origin=col13, category_list = col6, selected_weights = selected_weights, predicted_tags_html = predicted_tags_html)
 
                     # complate html tag
                     PRODUCT_CARD += '</body>'
@@ -611,64 +610,128 @@ def recommendation_engine_gui():
                     print(e)
                     pass
 
-            elif choice == "Scan receipt":
-                # init variable image_arr
-                image_arr = None
-                st.subheader("Scan your receipt")
-                image_file = st.file_uploader("Upload receipt image file", type=['jpg', 'png', 'jpeg'])
-                if image_file is not None:
-                    # folder public_receipt_images contains all images from public upload
-                    if not os.path.exists("public_receipt_images"):
-                        os.makedirs("public_receipt_images")
-                    path = os.path.join("public_receipt_images", image_file.name)
-                    if_save_image = save_image(image_file)
-                    if if_save_image == 1:
-                        st.warning("File size is too large. Try another file with lower size.")
-                    elif if_save_image == 0:
-
-                        # display receipt
-                        try:
-                            # st.image(image_file, use_column_width=True)
-                            image_arr = cv2.imread(path, 0)
-                        except Exception as e:
-                            st.error(f"Error {e} - wrong format of the file. Try another .jpg file.")
-                    else:
-                        st.error("Unknown error")
-                else:
-                    if st.button("Try test file"):
-                        # st.image("1.jpeg", use_column_width=True)
-                        image_file = "1.jpeg"
-                        image_arr = cv2.imread(image_file, 0)
-
-                if image_arr is not None:
-                    # one function call to access everything
-                    output_score, image = scorecard_obj.get_score_from_receipt(image_arr, USER_PREFERENCE_TEXT=my_preference)
-                    st.write("Scanned image")
-                    st.image(image, use_column_width=True)
-                    print("output_score", output_score)
-                    # st.text(output_score)
-
-                    progress_bar = st.progress(0)
-
-                    # add animation of fill
-                    for i in range(output_score):
-                        # Update progress bar upto output score.
-                        progress_bar.progress(i + 1)
-
-                    # display score
-                    SCORE_TITLE = """
-                    <div style="background-color:#464e5e;padding:10px;border-radius:10px">
-                    <h1 style="color:white;text-align:center;">{output_score} %</h1>
-                    <h3 style="color:white;text-align:center;"> is your shopping score </h3>
-                    </div>
-                    """.format(output_score=output_score)
-
-                    st.balloons()
-                    stc.html(SCORE_TITLE)
+            
         elif active_tab == "Amazon":
-            st.write("This page is for Amazon")
+            # create object of our backend script
+            recommendation_engine_obj2 = Recommendation_Engine(my_preference, datasource = 'amazon')
+
+            # st.write("This page is for Amazon")
+            # Enable mouse click or keyboard "enter / return " key to search product
+            if submit or product_name:
+
+                if product_name.strip() == '':
+                    final_keyword = 'food'  # if keyword is blank, default value is set to food
+                else:
+                    final_keyword = product_name.lower()
+                    final_keyword = scorecard_obj.correct_spell(final_keyword)
+
+                # Get recommendation using our object (Only single function call)
+                print("my_preference: ", my_preference)
+                # TODO: remapping task is going on
+                recommendations, len_of_list, empty_flag = recommendation_engine_obj2.recommendations_from_keyword_filename(final_keyword,
+                                                                                                              THRESHOLD=2,
+                                                                                                              USER_PREFERENCE=my_preference)
+                # Condition if user input is empty -> pass user preference
+                if final_keyword.strip() == '':
+                    TOTAL_PRODUCTS = """
+                        <div style="background-color:#464e5e;padding:10px;border-radius:10px">
+                        <h3 style="color:white;text-align:center;">Please enter product name  "{product_name}":  About <b>{len_of_list}</b> products recommended </h3>
+                        </div>
+                        """.format(len_of_list=len_of_list, product_name='')
+
+                else:  # Condition else user input is merged with user preference
+                    TOTAL_PRODUCTS = """
+                        <div style="background-color:#464e5e;padding:10px;border-radius:10px">
+                        <h3 style="color:white;text-align:center;">Results for "{product_name}":  About <b>{len_of_list}</b> products recommended </h3>
+                    </div>
+                        """.format(len_of_list=len_of_list, product_name=final_keyword)
+
+                # Display 'Results for...' tag into html
+                stc.html(TOTAL_PRODUCTS, height=100)
+
+                # Manage sorting option
+                if sort_by == 'Price Low to High':
+                    recommendations['ProductPrice'].fillna(99999.0, inplace=True)
+                    recommendations['ProductPrice'] = recommendations['ProductPrice'].astype(str)
+                    recommendations['ProductPrice'].str.extract('(\d*\.?\d*)', expand=False).astype(float)
+                    recommendations = recommendations.sort_values(by=['ProductPrice'], ascending=True)
+
+                elif sort_by == 'Price High to Low':
+                    recommendations['ProductPrice'].fillna(0.0, inplace=True)
+                    recommendations['ProductPrice'] = recommendations['ProductPrice'].astype(str)
+                    recommendations['ProductPrice'].str.extract('(\d*\.?\d*)', expand=False).astype(float)
+                    recommendations = recommendations.sort_values(by=['ProductPrice'], ascending=False)
+
+                elif user_preset == 'Price Conscious Peter' or sort_by == 'Unit Price Low to High':
+                    recommendations['priceperbasevolume'].fillna("", inplace=True)
+                    recommendations['priceperbasevolume'] = recommendations['priceperbasevolume'].astype(str)
+                    recommendations = recommendations.sort_values(by=['priceperbasevolume'], ascending=True)
+                else:
+                    pass
+
+                # uncomment this to see dataframe without html
+                st.dataframe(data=recommendations)
+
+                # TODO: HTML code for add here
+
+
         else:
             st.error("Something has gone terribly wrong.")
+    
+    elif choice == "Scan receipt":
+        # init variable image_arr
+        image_arr = None
+        st.subheader("Scan your receipt")
+        image_file = st.file_uploader("Upload receipt image file", type=['jpg', 'png', 'jpeg'])
+        if image_file is not None:
+            # folder public_receipt_images contains all images from public upload
+            if not os.path.exists("public_receipt_images"):
+                os.makedirs("public_receipt_images")
+            path = os.path.join("public_receipt_images", image_file.name)
+            if_save_image = save_image(image_file)
+            if if_save_image == 1:
+                st.warning("File size is too large. Try another file with lower size.")
+            elif if_save_image == 0:
+
+                # display receipt
+                try:
+                    # st.image(image_file, use_column_width=True)
+                    image_arr = cv2.imread(path, 0)
+                except Exception as e:
+                    st.error(f"Error {e} - wrong format of the file. Try another .jpg file.")
+            else:
+                st.error("Unknown error")
+        else:
+            if st.button("Try test file"):
+                # st.image("1.jpeg", use_column_width=True)
+                image_file = "1.jpeg"
+                image_arr = cv2.imread(image_file, 0)
+
+        if image_arr is not None:
+            # one function call to access everything
+            output_score, image = scorecard_obj.get_score_from_receipt(image_arr, USER_PREFERENCE_TEXT=my_preference)
+            st.write("Scanned image")
+            st.image(image, use_column_width=True)
+            print("output_score", output_score)
+            # st.text(output_score)
+
+            progress_bar = st.progress(0)
+
+            # add animation of fill
+            for i in range(output_score):
+                # Update progress bar upto output score.
+                progress_bar.progress(i + 1)
+
+            # display score
+            SCORE_TITLE = """
+            <div style="background-color:#464e5e;padding:10px;border-radius:10px">
+            <h1 style="color:white;text-align:center;">{output_score} %</h1>
+            <h3 style="color:white;text-align:center;"> is your shopping score </h3>
+            </div>
+            """.format(output_score=output_score)
+
+            st.balloons()
+            stc.html(SCORE_TITLE)
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=False)
 def start_RL_engine():

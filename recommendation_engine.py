@@ -17,21 +17,25 @@ import inflect
 import sqlite3
 import pandas as pd
 import ast 
+import os
 
 class Recommendation_Engine:
-    def __init__(self, my_preference = []):
+    def __init__(self, my_preference = [], datasource = 'countdown'):
 
         # read data from csv
         # self._read_csv("all_product_data.csv")
+        if datasource == 'countdown':
+            # read data from database
+            self.get_dynamic_data('dynamic_database.db')
 
-        # read data from database
-        self.get_dynamic_data('dynamic_database.db')
+            # select relevent features
+            self.feature_selection()
 
-        # select relevent features
-        self.feature_selection()
+            # data pre process
+            self.data_pre_processing()
 
-        # data pre process
-        self.data_pre_processing()
+        elif datasource == 'amazon':
+            print("amazon object created")
 
         # initialize of tokanization and vectorization
         self.tokanization()
@@ -40,6 +44,103 @@ class Recommendation_Engine:
 
         # Initialize inflect engine
         self.inflect_engine = inflect.engine()
+
+    def read_data_file_using_keywords(self, KEYWORD = "None"):
+
+        all_files = os.listdir("Amazon_Data_1/") 
+        # print(type(all_files))   
+        csv_files = list(filter(lambda f: f.endswith('.csv'), all_files))
+        
+        files_found = list(filter(lambda f: f.startswith(KEYWORD), csv_files))
+        print(files_found)
+
+        if len(files_found) != 0:
+            print("Data found")
+            self._read_csv("Amazon_Data_1/" + files_found[0])
+        else:
+            print("No data found for", KEYWORD)
+
+
+
+    def recommendations_from_keyword_filename(self, KEYWORD, THRESHOLD = 2, USER_PREFERENCE=[]):
+        try: 
+            # null input condition get recommendation based on preference
+            if KEYWORD == '': 
+                self.recommendation_list = None
+                self.legnth_recommendation_list = 0
+                self.empty_flag = True
+                return self.recommendation_list, self.legnth_recommendation_list, self.empty_flag
+            
+            self.read_data_file_using_keywords(KEYWORD)
+            
+            # select relevent features from amazon data
+            self.feature_selection(datasource='amazon')
+
+            # data pre process
+            self.data_pre_processing()
+
+            # print(self.dynamic_data)
+
+            # Function collocation manipulate user preference
+            KEYWORD, USER_PREFERENCE = self.collocation(KEYWORD, USER_PREFERENCE)
+            print("collocation: ", KEYWORD, USER_PREFERENCE)
+            # Generate plural form of key word and append into KEYWORD itself
+            plural = self.inflect_engine.plural(KEYWORD)
+            KEYWORD += " " + plural
+            print("Add plural:", KEYWORD)
+
+            # map category with USER_PREFERENCE
+            USER_PREFERENCE_TEXT = self.map_user_preference(USER_PREFERENCE)
+            # print(USER_PREFERENCE_TEXT)
+
+            KEYWORD = KEYWORD.lower()
+            print(KEYWORD)
+
+            # Standard listing without RL
+            self.data_list = self.dynamic_data['Product_Title'].values.tolist()
+            
+            # Priority 4 : (GET all product associated with keyword using title)
+            self.dynamic_data['distances'] = self.find_tfidf_and_cosine(self.data_list, KEYWORD)
+
+            # filter distance using THRESHOLD
+            self.recommendation_list = self.dynamic_data[self.dynamic_data['distances'] >= THRESHOLD/100].sort_values(by=['distances'], ascending=False)
+            
+            self.legnth_recommendation_list = len(self.recommendation_list.index)
+            
+            # for empty recommendation_list :: Helps to dispaly 'no product available with this key word' in site  
+            if self.legnth_recommendation_list == 0:
+                self.empty_flag = True
+            else: 
+                self.empty_flag = False
+            
+            # print(self.recommendation_list)
+            
+            # TODO :
+            # try:
+            #     # Data order manipulation with three priority
+            #     self.recommendation_list = self.get_relevance_sorted_product_with_user_priority(self.recommendation_list, KEYWORD +" "+ USER_PREFERENCE_TEXT)
+            # except Exception as e:
+            #     print('Error in Data order manipulation',e)
+            #     pass
+
+
+            # self.recommendation_list['colFromIndex'] = self.recommendation_list.index
+            # self.recommendation_list = self.recommendation_list.sort_values([preset,'colFromIndex'], ascending = (False, True))
+            print(self.recommendation_list.head())
+
+            # remove features and distances column from output data
+            del self.recommendation_list['features']
+            del self.recommendation_list['distances']
+            # del self.recommendation_list['colFromIndex']
+
+        except Exception as e:
+            # incase of error in script no recommendation
+            self.recommendation_list = None
+            self.legnth_recommendation_list = 0
+            self.empty_flag = True
+            print(e)
+
+        return self.recommendation_list, self.legnth_recommendation_list, self.empty_flag
 
     def get_dynamic_data(self, dbname = 'dynamic_database.db'):
         # Create your connection.
@@ -57,9 +158,8 @@ class Recommendation_Engine:
     # get all data into dataframe  
     def _read_csv(self, FILE_NAME):
         try:
-            
-            self.df = pd.read_csv(FILE_NAME)
-            #print(self.df.head()) 
+            self.dynamic_data = pd.read_csv(FILE_NAME)
+            #print(self.dynamic_data.head()) 
         except Exception as e:
             print(e)
 
@@ -84,17 +184,13 @@ class Recommendation_Engine:
         except Exception as e:
             print(e)
 
-    def feature_selection(self):
+    def feature_selection(self, datasource = 'countdown'):
         try:
-            # Uncomment this one based on requirement (Check speed in r_d folder)
-            # self.selected_features = ['ProductTitle', 'Product Detail', 'Ingredients']
-            # self.dynamic_data['features'] = self.dynamic_data[self.selected_features].agg(' '.join, axis=1)#.str.replace('\s+', ' ')
-            # self.dynamic_data['features'] = self.dynamic_data[self.selected_features].astype(str).apply(lambda x: ' '.join(x), axis=1)
-            # self.dynamic_data['features'] = self.dynamic_data[self.selected_features].astype(str).sum(axis=1)
-            t5 = time.time()
-            self.dynamic_data['features'] = self.dynamic_data['ProductTitle'].astype(str) + ' ' + self.dynamic_data['ProductDetail'].astype(str) + ' ' + self.dynamic_data['Ingredients'].astype(str) + ' ' + self.dynamic_data['ProductPrice'].astype(str) + ' ' + self.dynamic_data['ProductVolume'].astype(str)  + ' ' + self.dynamic_data['Nutritional_information'].astype(str) + ' ' + self.dynamic_data['Allergenwarnings'].astype(str) + ' ' + self.dynamic_data['Claims'].astype(str) + ' ' + self.dynamic_data['Endorsements'].astype(str) + ' ' + self.dynamic_data['Productorigin'].astype(str)
-            t6 = time.time()
-            print("Time 3: ", t6-t5)
+            if datasource == "countdown":
+                self.dynamic_data['features'] = self.dynamic_data['ProductTitle'].astype(str) + ' ' + self.dynamic_data['ProductDetail'].astype(str) + ' ' + self.dynamic_data['Ingredients'].astype(str) + ' ' + self.dynamic_data['ProductPrice'].astype(str) + ' ' + self.dynamic_data['ProductVolume'].astype(str)  + ' ' + self.dynamic_data['Nutritional_information'].astype(str) + ' ' + self.dynamic_data['Allergenwarnings'].astype(str) + ' ' + self.dynamic_data['Claims'].astype(str) + ' ' + self.dynamic_data['Endorsements'].astype(str) + ' ' + self.dynamic_data['Productorigin'].astype(str)
+            elif datasource == "amazon":
+                self.dynamic_data['features'] = self.dynamic_data['Product_Title'].astype(str) + ' ' + self.dynamic_data['Special_Ingredients'].astype(str) + ' ' + self.dynamic_data['Product_Detail'].astype(str) + ' ' + self.dynamic_data['Product_Description'].astype(str) + ' ' + self.dynamic_data['Product_Info'].astype(str)  + ' ' + self.dynamic_data['Allergen_Info'].astype(str) + ' ' + self.dynamic_data['Important_Information'].astype(str) + ' ' + self.dynamic_data['Rating'].astype(str) + ' ' + self.dynamic_data['Product_Reviews'].astype(str) + ' ' + self.dynamic_data['Product_Price'].astype(str)
+            
             # print(self.dynamic_data['features'])
         except Exception as e:
             print(e)
