@@ -113,15 +113,14 @@ class Recommendation_Engine:
             else: 
                 self.empty_flag = False
             
-            # print(self.recommendation_list)
+            print(self.recommendation_list.head())
             
-            # TODO :
-            # try:
-            #     # Data order manipulation with three priority
-            #     self.recommendation_list = self.get_relevance_sorted_product_with_user_priority(self.recommendation_list, KEYWORD +" "+ USER_PREFERENCE_TEXT)
-            # except Exception as e:
-            #     print('Error in Data order manipulation',e)
-            #     pass
+            try:
+                # Data order manipulation with three priority
+                self.recommendation_list = self.get_relevance_sorted_product_with_user_priority(self.recommendation_list, KEYWORD +" "+ USER_PREFERENCE_TEXT, datasource = "amazon")
+            except Exception as e:
+                print('Error in Data order manipulation',e)
+                pass
 
 
             # self.recommendation_list['colFromIndex'] = self.recommendation_list.index
@@ -265,7 +264,7 @@ class Recommendation_Engine:
         return distances[0][:-1]
 
     # Data order manipulation (implementation of priority 1 & 2 rest of product are listed after p2 (i.e, priority 3))
-    def get_relevance_sorted_product_with_user_priority(self, recommendation_list, USER_PREFERENCE_TEXT):
+    def get_relevance_sorted_product_with_user_priority(self, recommendation_list, USER_PREFERENCE_TEXT, datasource = 'countdown'):
         
         # detect none user PREFERENCE
         if USER_PREFERENCE_TEXT == '':
@@ -274,76 +273,78 @@ class Recommendation_Engine:
         # else modify list using priority
         else:
             USER_PREFERENCE_TEXT = USER_PREFERENCE_TEXT.lower()
-            # print("USER_PREFERENCE_TEXT: ", USER_PREFERENCE_TEXT)
             
-            # only get predicted_tags + title + Category in single string
-            recommendation_list['predicted_tags_string'] = recommendation_list['predicted_tags'].apply(lambda x: ' '.join([str(i) for i in ast.literal_eval(x)])) + ' ' +  recommendation_list['ProductTitle'].astype(str) + ' ' + recommendation_list['Category'].astype(str)
-            recommendation_list['features_priority'] = recommendation_list['predicted_tags_string'].astype(str)
-            # print(recommendation_list['features_priority'].head())
+            if datasource == "countdown":
+                # only get predicted_tags + title + Category in single string
+                recommendation_list['predicted_tags_string'] = recommendation_list['predicted_tags'].apply(lambda x: ' '.join([str(i) for i in ast.literal_eval(x)])) + ' ' +  recommendation_list['ProductTitle'].astype(str) + ' ' + recommendation_list['Category'].astype(str)
+                recommendation_list['features_priority'] = recommendation_list['predicted_tags_string'].astype(str)
+                # print(recommendation_list['features_priority'].head())
+                
+                # convert to list of string for matching
+                predicted_tags_data = recommendation_list['features_priority'].values.tolist()
+                # print(predicted_tags_data)
+
+                # find distance between predicted_tags and USER_PREFERENCE_TEXT
+                recommendation_list['predicted_tags_distances'] = self.find_tfidf_and_cosine(predicted_tags_data, USER_PREFERENCE_TEXT)
+                # print(recommendation_list['predicted_tags_distances'])
+
+                # sort list using distance
+                recommendation_list = recommendation_list.sort_values(by=['predicted_tags_distances'], ascending=False, ignore_index=True)
+
+                # Delete processed column
+                del recommendation_list['features_priority']
+                del recommendation_list['predicted_tags_distances']
             
-            # convert to list of string for matching
-            predicted_tags_data = recommendation_list['features_priority'].values.tolist()
-            # print(predicted_tags_data)
+            elif datasource == "amazon":
 
-            # find distance between predicted_tags and USER_PREFERENCE_TEXT
-            recommendation_list['predicted_tags_distances'] = self.find_tfidf_and_cosine(predicted_tags_data, USER_PREFERENCE_TEXT)
-            # print(recommendation_list['predicted_tags_distances'])
+                recommendation_list['features_priority_1'] = recommendation_list['Product_Title'].astype(str)
 
-            # sort list using distance
-            recommendation_list = recommendation_list.sort_values(by=['predicted_tags_distances'], ascending=False, ignore_index=True)
-
-            # Delete processed column
-            del recommendation_list['features_priority']
-            del recommendation_list['predicted_tags_distances']
+                # Priority 1 : user input title + words from USER_PREFERENCE
+                title_data = recommendation_list['features_priority_1'].values.tolist()
             
-            # OLD ALGO PART
-            # recommendation_list['features_priority_1'] = recommendation_list['ProductTitle'].astype(str) + ' ' + recommendation_list['Category'].astype(str)
+                # find distance with title
+                recommendation_list['distances_1'] = self.find_tfidf_and_cosine(title_data, USER_PREFERENCE_TEXT)
 
-            # # Priority 1 : user input title + words from USER_PREFERENCE
-            # title_data = recommendation_list['features_priority_1'].values.tolist()
+                # filter distance using THRESHOLD
+                
+                # THRESHOLD > 2.1 for get products form only title. (distances_1>=2.1 sava as it is)
+                # CASE 1 Output
+                recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['distances_1'], ascending=False)
             
-            # # find distance with title
-            # recommendation_list['distances_1'] = self.find_tfidf_and_cosine(title_data, USER_PREFERENCE_TEXT)
+                # # FOR RL
+                # # recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['RL_weights'], ascending=False)
 
-            # # filter distance using THRESHOLD
-            
-            # # THRESHOLD > 2.1 for get products form only title. (distances_1>=2.1 sava as it is)
-            # # CASE 1 Output
-            # recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['distances_1'], ascending=False)
-            # # FOR RL
-            # # recommendation_list_priority1 = recommendation_list[recommendation_list['distances_1'] >= 1.3/100].sort_values(by=['RL_weights'], ascending=False)
+                # CASE 2 / Priority 2 user input + PREFERENCE + other attributes 
+                # select column form recommendation_list for priority 2 and further process 
+                recommendation_list_priority2 = recommendation_list[recommendation_list['distances_1'] < 1.3/100].sort_values(by=['distances_1'], ascending=False)
+                # sort_values(['distances_1', 'RL_weights'], ascending = [False, False], inplace = False)
+                #Select other features for case 2
+                recommendation_list_priority2['features_priority_2'] = recommendation_list_priority2['Product_Title'].astype(str) + ' ' +recommendation_list_priority2['Special_Ingredients'].astype(str) + ' ' + recommendation_list_priority2['Product_Detail'].astype(str) + ' ' + recommendation_list_priority2['Product_Description'].astype(str) + ' ' + recommendation_list_priority2['Product_Info'].astype(str) + ' ' + recommendation_list_priority2['Allergen_Info'].astype(str) + ' ' + recommendation_list_priority2['Important_Information'].astype(str)+ ' ' + recommendation_list_priority2['Product_Reviews'].astype(str)
+                
+                other_data = recommendation_list_priority2['features_priority_2'].values.tolist()
 
-            # # CASE 2 / Priority 2 user input + PREFERENCE + other attributes 
-            # # select column form recommendation_list for priority 2 and further process 
-            # recommendation_list_priority2 = recommendation_list[recommendation_list['distances_1'] < 1.3/100].sort_values(by=['distances_1'], ascending=False)
-            # # sort_values(['distances_1', 'RL_weights'], ascending = [False, False], inplace = False)
-            # #Select other features for case 2
-            # recommendation_list_priority2['features_priority_2'] = recommendation_list_priority2['ProductTitle'].astype(str) + ' ' + recommendation_list_priority2['Category'].astype(str) + ' ' +recommendation_list_priority2['Ingredients'].astype(str) + ' ' + recommendation_list_priority2['Nutritional_information'].astype(str) + ' ' + recommendation_list_priority2['Allergenwarnings'].astype(str) + ' ' + recommendation_list_priority2['Claims'].astype(str) + ' ' + recommendation_list_priority2['Endorsements'].astype(str)
-            
-            # other_data = recommendation_list_priority2['features_priority_2'].values.tolist()
+                # find distance with other data
+                recommendation_list_priority2['distances_2'] = self.find_tfidf_and_cosine(other_data, USER_PREFERENCE_TEXT)
 
-            # # find distance with other data
-            # recommendation_list_priority2['distances_2'] = self.find_tfidf_and_cosine(other_data, USER_PREFERENCE_TEXT)
+                # sort data CASE 2
+                recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['distances_2'], ascending=False)
 
-            # # sort data CASE 2
-            # recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['distances_2'], ascending=False)
-            # # FOR RL
-            # # recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['RL_weights'], ascending=False)
+                # # FOR RL
+                # # recommendation_list_priority2 = recommendation_list_priority2.sort_values(by=['RL_weights'], ascending=False)
 
-            # #print("New LEN: ", len(recommendation_list_priority2.index))
-            # #print(recommendation_list_priority2)
+                # #print("New LEN: ", len(recommendation_list_priority2.index))
+                # #print(recommendation_list_priority2)
 
-            # # merge all data
-            # recommendation_list_priority1 = recommendation_list_priority1.append(recommendation_list_priority1, ignore_index = True)
-            #print(recommendation_list_priority1)
-
-            # Delete processed column
-            # del recommendation_list_priority1['features_priority_1']
-            # del recommendation_list_priority1['distances_1']
-            # del recommendation_list_priority1['features_priority_2']	
-            # del recommendation_list_priority1['distances_2']	
+                # # merge all data
+                recommendation_list_priority1 = recommendation_list_priority1.append(recommendation_list_priority2, ignore_index = True)
+                
+                # Delete processed column
+                del recommendation_list_priority1['features_priority_1']
+                del recommendation_list_priority1['distances_1']
+                del recommendation_list_priority1['features_priority_2']	
+                del recommendation_list_priority1['distances_2']	
             	
-        return recommendation_list
+        return recommendation_list_priority1
 
     # prioritize preference add word weights on preferences
     def prioritize_preference(self, USER_PREFERENCE, turnon = True):
